@@ -64,11 +64,14 @@ async def chat(request: ChatRequest):
         )
 
         # Extract the assistant's last message
+        # Use .text property which always returns a plain string,
+        # regardless of whether the provider returns content as
+        # a string or a list of content blocks.
         messages = result.get("messages", [])
         assistant_msg = ""
         for msg in reversed(messages):
-            if hasattr(msg, "type") and msg.type == "ai" and msg.content:
-                assistant_msg = msg.content
+            if hasattr(msg, "type") and msg.type == "ai":
+                assistant_msg = msg.text if hasattr(msg, "text") else str(msg.content)
                 break
             elif isinstance(msg, dict) and msg.get("role") == "assistant":
                 assistant_msg = msg.get("content", "")

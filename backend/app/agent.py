@@ -1,11 +1,30 @@
 """DevRel Agent: Deep Agents orchestrator with teaching subagents."""
 
+import os
+
 from deepagents import create_deep_agent
 from deepagents.backends import CompositeBackend, StateBackend, StoreBackend
+from langchain_google_genai import ChatGoogleGenerativeAI
 from langgraph.checkpoint.memory import MemorySaver
 from langgraph.store.memory import InMemoryStore
 
 from app.tools import create_repo_tools
+
+
+def _build_model():
+    """Build the LLM from environment variables."""
+    gemini_model = os.getenv("GEMINI_MODEL")
+    gemini_key = os.getenv("GEMINI_API_KEY")
+
+    if gemini_model and gemini_key:
+        return ChatGoogleGenerativeAI(
+            model=gemini_model,
+            google_api_key=gemini_key,
+        )
+
+    raise ValueError(
+        "No model configured. Set GEMINI_MODEL and GEMINI_API_KEY in .env"
+    )
 
 
 ORCHESTRATOR_PROMPT = """\
@@ -78,12 +97,13 @@ def create_devrel_agent(target_repo_path: str):
         A configured Deep Agent ready for invocation.
     """
     repo_tools = create_repo_tools(target_repo_path)
+    model = _build_model()
     store = InMemoryStore()
     checkpointer = MemorySaver()
 
     agent = create_deep_agent(
         name="devrel-agent",
-        model="claude-sonnet-4-5-20250929",
+        model=model,
         tools=repo_tools,
         system_prompt=ORCHESTRATOR_PROMPT,
         subagents=[

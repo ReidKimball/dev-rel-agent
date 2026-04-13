@@ -23,7 +23,7 @@ An AI-powered Developer Relations agent built on [Deep Agents](https://github.co
 
 - **Backend**: Python, FastAPI, Deep Agents (LangChain/LangGraph)
 - **Frontend**: React, TypeScript, Vite, Tailwind CSS
-- **LLM**: Claude Sonnet (configurable)
+- **LLM**: Google Gemini (configurable via `GEMINI_MODEL`)
 
 ## Getting Started
 
@@ -31,16 +31,27 @@ An AI-powered Developer Relations agent built on [Deep Agents](https://github.co
 
 - Python 3.11+
 - Node.js 18+
-- An Anthropic API key (or OpenAI)
+- A Google Gemini API key
 
 ### Backend Setup
 
+**macOS / Linux:**
 ```bash
 cd backend
 python -m venv .venv
-source .venv/bin/activate  # Windows: .venv\Scripts\activate
+source .venv/bin/activate
 pip install -r requirements.txt
 cp .env.example .env
+# Edit .env with your API key and target repo path
+```
+
+**Windows (PowerShell):**
+```powershell
+cd backend
+python -m venv .venv
+.venv\Scripts\Activate.ps1
+pip install -r requirements.txt
+copy .env.example .env
 # Edit .env with your API key and target repo path
 ```
 
@@ -54,7 +65,15 @@ npm install
 ### Running
 
 Start the backend:
+
+**macOS / Linux:**
 ```bash
+cd backend
+uvicorn app.main:app --reload --port 8000
+```
+
+**Windows (PowerShell):**
+```powershell
 cd backend
 uvicorn app.main:app --reload --port 8000
 ```
@@ -73,9 +92,9 @@ Set these in `backend/.env`:
 
 | Variable | Description | Default |
 |----------|-------------|---------|
-| `ANTHROPIC_API_KEY` | Your Anthropic API key | (required) |
-| `OPENAI_API_KEY` | Your OpenAI API key (alternative) | (optional) |
-| `TARGET_REPO_PATH` | Path to the repo the agent will analyze | `./sample-repo` |
+| `GEMINI_API_KEY` | Your Google Gemini API key | (required) |
+| `GEMINI_MODEL` | Gemini model name | `gemini-2.0-flash` |
+| `TARGET_REPO_PATH` | Absolute or relative path to the repo the agent will analyze | `./sample-repo` |
 
 ## Skills
 
